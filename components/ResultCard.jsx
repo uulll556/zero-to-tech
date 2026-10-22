@@ -1,12 +1,21 @@
+"use client";
+
+// 结果区卡片。这一节从"写死假数据"改成"显示父组件传来的 result"。
+// 没有结果时（result 为 null）先显示一份默认占位；有结果就显示后端返回的内容。
+// 拼音、情感分数目前后端还是占位/粗略值，模块 6 会换成真的。
 import { useEffect, useRef } from "react";
 import { animate, scrambleText } from "animejs";
 
-// 一个完整的 React 组件：它自己 import 要用的 anime，自己 export 出去。
-// 一挂载（出现在页面上），就自己淡入、并把情感分数滚动归位——这是它自带的"入场动画"。
-// （点"开始分析"再去驱动分析，是"数据驱动界面"的活儿，留到 4.4。）
-export default function ResultCard() {
+export default function ResultCard({ result }) {
   const cardRef = useRef(null);
   const scoreRef = useRef(null);
+
+  const original = result
+    ? result.text
+    : "今天的风很轻，适合把脑海里的想法慢慢写下来。";
+  const pinyin = result ? result.pinyin : "jīn tiān de fēng hěn qīng …";
+  const score = result ? result.score : 0.86;
+  const label = result ? result.label : "偏积极";
 
   useEffect(() => {
     // 卡片自己淡入：.card 默认 opacity:0，这张卡负责把自己显出来
@@ -32,20 +41,20 @@ export default function ResultCard() {
       <div className="result-stack">
         <div className="result-item">
           <span>原文</span>
-          <p>今天的风很轻，适合把脑海里的想法慢慢写下来。</p>
+          <p>{original}</p>
         </div>
         <div className="result-item">
           <span>拼音</span>
-          <p>jīn tiān de fēng hěn qīng …</p>
+          <p>{pinyin}</p>
         </div>
         <div className="result-grid">
           <div className="result-badge">
             <span>情感分数</span>
-            <strong data-score ref={scoreRef}>0.86</strong>
+            <strong data-score ref={scoreRef}>{score}</strong>
           </div>
           <div className="result-badge">
             <span>情感判断</span>
-            <strong>偏积极</strong>
+            <strong>{label}</strong>
           </div>
         </div>
       </div>
